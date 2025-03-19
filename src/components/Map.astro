@@ -18,10 +18,7 @@
 
   // Initialize the map
   const initMap = () => {
-    // Replace with your Mapbox access token
     mapboxgl.accessToken = import.meta.env.PUBLIC_MAPBOX_ACCESS_TOKEN;
-
-    console.log('Mapbox Access Token:', mapboxgl.accessToken);
 
     if (!mapboxgl.accessToken) {
       console.error(
@@ -196,8 +193,8 @@
         // Create popup with offset
         new mapboxgl.Popup({
           offset: [0, -5],
-          closeButton: true,
-          closeOnClick: false,
+          closeButton: false,
+          closeOnClick: true,
           maxWidth: '300px',
           className: 'bicycle-popup',
         })
