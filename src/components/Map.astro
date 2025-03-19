@@ -1,0 +1,224 @@
+---
+// map.astro
+---
+
+<div id="map-container" class="map-wrapper"></div>
+
+<style>
+  .map-wrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+</style>
+
+<script>
+  import mapboxgl from 'mapbox-gl';
+  import 'mapbox-gl/dist/mapbox-gl.css';
+
+  // Initialize the map
+  const initMap = () => {
+    // Replace with your Mapbox access token
+    mapboxgl.accessToken = import.meta.env.PUBLIC_MAPBOX_ACCESS_TOKEN;
+
+    console.log('Mapbox Access Token:', mapboxgl.accessToken);
+
+    if (!mapboxgl.accessToken) {
+      console.error(
+        'Mapbox access token is missing. Please set the PUBLIC_MAPBOX_ACCESS_TOKEN environment variable.',
+      );
+      return;
+    }
+
+    // Custom popup styling -- This needs to be done before any popups are created -- but can I put this anywhere else?
+    const customPopupStyle = document.createElement('style');
+    customPopupStyle.textContent = `
+      .mapboxgl-popup {
+        max-width: 300px;
+      }
+      
+      .mapboxgl-popup-content {
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        font-family: 'Arial', sans-serif;
+      }
+      
+      .mapboxgl-popup-content h3 {
+        margin-top: 0;
+        margin-bottom: 10px;
+        color: #333;
+        font-size: 16px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 8px;
+      }
+      
+      .mapboxgl-popup-content table {
+        margin-top: 10px;
+        width: 100%;
+      }
+      
+      .mapboxgl-popup-content table td {
+        padding: 4px 0;
+        font-size: 13px;
+      }
+      
+      .mapboxgl-popup-content table td:first-child {
+        width: 40%;
+        color: #666;
+      }
+      
+      .mapboxgl-popup-close-button {
+        font-size: 20px;
+        color: #666;
+        padding: 5px 10px;
+        line-height: 1;
+        right: 5px;
+        top: 5px;
+        border-radius: 4px;
+        transition: background-color 0.2s, color 0.2s;
+      }
+      
+      .mapboxgl-popup-close-button:hover {
+        background-color: #f0f0f0;
+        color: #333;
+      }
+    `;
+    document.head.appendChild(customPopupStyle);
+
+    // Definitions for the map props --> https://docs.mapbox.com/mapbox-gl-js/api/map/
+    const map = new mapboxgl.Map({
+      container: 'map-container',
+      style: 'mapbox://styles/mapbox/light-v11', // Map style
+      center: [-122.6784, 45.5152], // Portland, Oregon (longitude, latitude)
+      zoom: 12, // Default zoom level,
+    });
+
+    // Add navigation controls
+    map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+    const navControl = document.querySelector('.mapboxgl-ctrl-top-right');
+    if (navControl instanceof HTMLElement) {
+      navControl.style.top = '80px'; // Adjust this value based on header height
+    }
+
+    // Add geolocation control
+    map.addControl(
+      new mapboxgl.GeolocateControl({
+        positionOptions: {
+          enableHighAccuracy: true,
+        },
+        trackUserLocation: true,
+      }),
+    );
+
+    // Handle map load event
+    map.on('load', () => {
+      console.log('Map has loaded!');
+
+      // Add GeoJSON source
+      map.addSource('bicycle-facilities', {
+        type: 'geojson',
+        data: 'src/data/bike-facilities.geojson',
+      });
+
+      // Add a line layer for bicycle facilities
+      map.addLayer({
+        id: 'bicycle-lanes',
+        type: 'line',
+        source: 'bicycle-facilities',
+        paint: {
+          'line-color': [
+            'match',
+            ['get', 'Facility'],
+            'ABL',
+            '#FF5252', // Advisory Bike Lane - Red
+            'BBBL',
+            '#9C27B0', // Buffered Bus-Bike Lane - Purple
+            'BL',
+            '#4CAF50', // Bike Lane - Green
+            'BBL',
+            '#8BC34A', // Buffered Bike Lane - Light Green
+            'ESR',
+            '#795548', // Enhanced Shared Roadway - Brown
+            'LSB',
+            '#009688', // Local Street Bikeway - Teal
+            'NG',
+            '#607D8B', // Neighborhood Greenway - Blue Gray
+            'PBL',
+            '#FF9800', // Protected Bike Lane - Orange
+            'SBBL',
+            '#3F51B5', // Shared Bus-Bike Lane - Indigo
+            'SIR',
+            '#FFC107', // Shared Industrial Roadway - Amber
+            'TRL',
+            '#2196F3', // Trail - Blue
+            '#757575', // Other/default - Gray
+          ],
+          'line-width': 3,
+          'line-opacity': 0.8,
+        },
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round',
+        },
+      });
+
+      // Add click event for bicycle facilities
+      map.on('click', 'bicycle-lanes', (e) => {
+        if (!e.features || e.features.length === 0) return;
+
+        const feature = e.features[0];
+        const properties = feature.properties;
+
+        if (!properties) return;
+
+        // Feature properties Yearbuilt & YearRetired years can be null
+        const yearBuilt = properties.YearBuilt
+          ? properties.YearBuilt
+          : 'Unknown';
+        const yearRetired = properties.YearRetired
+          ? properties.YearRetired
+          : 'N/A';
+
+        // Create HTML for popup
+        const popupHtml = `
+            <h3 style="width: 150px: display: flex">${properties.SegmentName}</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr><td><strong>Type:</strong></td><td>${properties.Facility}</td></tr>
+                <tr><td><strong>Status:</strong></td><td>${properties.Status}</td></tr>
+                <tr><td><strong>Built:</strong></td><td>${yearBuilt}</td></tr>
+                <tr><td><strong>Length:</strong></td><td>${properties.LengthMiles} miles</td></tr>
+                <tr><td><strong>ID:</strong></td><td>${properties.TranPlanID}</td></tr>
+            </table>
+            `;
+
+        // Create popup with offset
+        new mapboxgl.Popup({
+          offset: [0, -5],
+          closeButton: true,
+          closeOnClick: false,
+          maxWidth: '300px',
+          className: 'bicycle-popup',
+        })
+          .setLngLat(e.lngLat)
+          .setHTML(popupHtml)
+          .addTo(map);
+      });
+
+      // Change cursor on hover
+      map.on('mouseenter', 'bicycle-lanes', () => {
+        map.getCanvas().style.cursor = 'pointer';
+      });
+
+      map.on('mouseleave', 'bicycle-lanes', () => {
+        map.getCanvas().style.cursor = '';
+      });
+
+      //TODO - add legend as a custom control
+    });
+  };
+
+  // Initialize the map when the DOM is loaded
+  document.addEventListener('DOMContentLoaded', initMap);
+</script>
