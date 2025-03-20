@@ -19,7 +19,10 @@
 
   // Initialize the map
   const initMap = () => {
-    mapboxgl.accessToken = import.meta.env.PUBLIC_MAPBOX_ACCESS_TOKEN;
+    // mapboxgl.accessToken = import.meta.env.PUBLIC_MAPBOX_ACCESS_TOKEN;
+    // I'm including the env variable here for the sake of simplicity for this interview.
+    mapboxgl.accessToken =
+      'pk.eyJ1IjoiZGV2c3dlZXRpbmciLCJhIjoiY2p0N3JibTF3MDEwdzRhb3VnNDNiZm9qdiJ9.w7COXwtrNSsC1U1_sQmIJg';
 
     if (!mapboxgl.accessToken) {
       console.error(
