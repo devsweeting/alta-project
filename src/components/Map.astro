@@ -15,6 +15,7 @@
 <script>
   import mapboxgl from 'mapbox-gl';
   import 'mapbox-gl/dist/mapbox-gl.css';
+  import { facilityColors } from '../data/facilityConstants.js';
 
   // Initialize the map
   const initMap = () => {
@@ -129,31 +130,37 @@
             'match',
             ['get', 'Facility'],
             'ABL',
-            '#FF5252', // Advisory Bike Lane - Red
+            facilityColors['ABL'],
             'BBBL',
-            '#9C27B0', // Buffered Bus-Bike Lane - Purple
+            facilityColors['BBBL'],
             'BL',
-            '#4CAF50', // Bike Lane - Green
+            facilityColors['BL'],
             'BBL',
-            '#8BC34A', // Buffered Bike Lane - Light Green
+            facilityColors['BBL'],
             'ESR',
-            '#795548', // Enhanced Shared Roadway - Brown
+            facilityColors['ESR'],
             'LSB',
-            '#009688', // Local Street Bikeway - Teal
+            facilityColors['LSB'],
             'NG',
-            '#607D8B', // Neighborhood Greenway - Blue Gray
+            facilityColors['NG'],
             'PBL',
-            '#FF9800', // Protected Bike Lane - Orange
+            facilityColors['PBL'],
             'SBBL',
-            '#3F51B5', // Shared Bus-Bike Lane - Indigo
+            facilityColors['SBBL'],
             'SIR',
-            '#FFC107', // Shared Industrial Roadway - Amber
+            facilityColors['SIR'],
             'TRL',
-            '#2196F3', // Trail - Blue
-            '#757575', // Other/default - Gray
+            facilityColors['TRL'],
+            facilityColors['default'],
           ],
           'line-width': 3,
           'line-opacity': 0.8,
+          'line-dasharray': [
+            'case',
+            ['==', ['get', 'Status'], 'PLANNED'],
+            ['literal', [2, 2]], // Dashed line for planned status
+            ['literal', [1, 0]], // Solid line for active status (or any other status)
+          ],
         },
         layout: {
           'line-join': 'round',
@@ -180,7 +187,7 @@
 
         // Create HTML for popup
         const popupHtml = `
-            <h3 style="width: 150px: display: flex">${properties.SegmentName}</h3>
+            <h3 style="width: 200px: display: flex">${properties.SegmentName}</h3>
             <table style="width: 100%; border-collapse: collapse;">
                 <tr><td><strong>Type:</strong></td><td>${properties.Facility}</td></tr>
                 <tr><td><strong>Status:</strong></td><td>${properties.Status}</td></tr>
