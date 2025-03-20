@@ -16,6 +16,7 @@
   import mapboxgl from 'mapbox-gl';
   import 'mapbox-gl/dist/mapbox-gl.css';
   import { facilityColors } from '../data/facilityConstants.js';
+  import { bikeFacilities } from '../data/bike-facilities.js';
 
   // Initialize the map
   const initMap = () => {
@@ -120,7 +121,7 @@
       // Add GeoJSON source
       map.addSource('bicycle-facilities', {
         type: 'geojson',
-        data: 'src/data/bike-facilities.geojson',
+        data: bikeFacilities as GeoJSON.FeatureCollection<GeoJSON.Geometry>,
       });
 
       // Add a line layer for bicycle facilities

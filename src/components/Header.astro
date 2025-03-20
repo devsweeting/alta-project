@@ -1,12 +1,13 @@
 ---
 // src/components/Header.astro
+import { Image } from 'astro:assets';
+import bike from '../assets/bike.svg';
 ---
 
 <header class="site-header">
   <div class="container">
     <div class="logo">
-      <!-- TODO -- find Alta or Bike logo -->
-      <img src="src/assets/bike.svg" alt="Bike" class="bike-icon" />
+      <Image src={bike} alt="Bike" class="bike-icon" />
       <span>Portland Bicycle Facilities</span>
     </div>
   </div>
