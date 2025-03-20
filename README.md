@@ -1,12 +1,16 @@
 # Alta Technical Assessment: Bike Facilities
 
+## View Live
+
+[Deployed via Vercel](alta-project.vercel.app)
+
+![project-screenshot](src/assets/screenshot.png)
+
 install the project via github:
 
 ```sh
 git clone https://github.com/devsweeting/alta-project.git
 ```
-
-![just-the-basics](src/assets/screenshot.png)
 
 ## Run on Docker
 
