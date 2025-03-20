@@ -19,13 +19,7 @@ docker build -t alta-project .
 Once the image is built run the image locally using:
 
 ```sh
-docker run -p 8080:80 alta-project
-```
-
-If running into port 4321 issues, try setting the HOST variable
-
-```sh
-docker run -p 8080:4321 -e HOST=0.0.0.0 alta-project
+docker run -p 4321:4321 alta-project
 ```
 
 You can then view this project at:
