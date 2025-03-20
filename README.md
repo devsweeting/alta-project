@@ -1,5 +1,7 @@
 # Alta Technical Assessment: Bike Facilities
 
+install the project via github:
+
 ```sh
 git clone https://github.com/devsweeting/alta-project.git
 ```
@@ -8,7 +10,7 @@ git clone https://github.com/devsweeting/alta-project.git
 
 ## Run on Docker
 
-install the project locally and build the docker image using:
+In your terminal navigate to this project folder. and build the docker image using:
 
 ```sh
 docker build -t alta-project .
@@ -18,6 +20,12 @@ Once the image is built run the image locally using:
 
 ```sh
 docker run -p 8080:80 alta-project
+```
+
+If running into port 4321 issues, try setting the HOST variable
+
+```sh
+docker run -p 8080:4321 -e HOST=0.0.0.0 alta-project
 ```
 
 You can then view this project at:
