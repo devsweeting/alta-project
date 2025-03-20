@@ -14,19 +14,19 @@ git clone https://github.com/devsweeting/alta-project.git
 
 ## Run on Docker
 
-In your terminal navigate to this project folder. and build the docker image using:
+Via terminal, navigate to this project folder and build the docker image using:
 
 ```sh
 docker build -t alta-project .
 ```
 
-Once the image is built run the image locally using:
+Then run the image locally:
 
 ```sh
 docker run -p 4321:4321 alta-project
 ```
 
-You can then view this project at:
+View this project locally at:
 
 ```
   local: http://localhost:4321
@@ -63,6 +63,7 @@ Inside this project, you'll see the following folders and files:
 - [Astro](https://docs.astro.build)
 - [MapBox GL JS](https://docs.mapbox.com/mapbox-gl-js/guides)
 - [Astro Docker Instructions](https://docs.astro.build/en/recipes/docker/)
+- [Vercel](https://vercel.com/docs/frameworks/astro)
 
 ## 🧞 Commands
 
@@ -76,8 +77,3 @@ All commands are run from the root of the project, from a terminal:
 | `npm run preview`         | Preview your build locally, before deploying     |
 | `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 The "Nice-to-haves"
-
-- Map Legend
-- Bike route navigation to estination
